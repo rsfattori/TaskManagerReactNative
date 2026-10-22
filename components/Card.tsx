@@ -1,22 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-// Componente próprio que exibe uma tarefa na lista.
-// Recebe os dados da tarefa e a ação de excluir por PROPS.
 type CardProps = {
-	id: number;
 	titulo: string;
 	descricao: string;
 	status: string;
-	onExcluir: (id: number) => void;
 };
 
-export default function Card({
-	id,
-	titulo,
-	descricao,
-	status,
-	onExcluir,
-}: CardProps) {
+export default function Card({ titulo, descricao, status }: CardProps) {
 	return (
 		<View style={styles.card}>
 			<Text style={styles.titulo}>{titulo}</Text>
@@ -24,13 +14,6 @@ export default function Card({
 
 			<View style={styles.rodape}>
 				<Text style={styles.status}>Status: {status}</Text>
-
-				<Pressable
-					style={styles.botaoExcluir}
-					onPress={() => onExcluir(id)}
-				>
-					<Text style={styles.textoExcluir}>Excluir</Text>
-				</Pressable>
 			</View>
 		</View>
 	);
@@ -64,17 +47,6 @@ const styles = StyleSheet.create({
 
 	status: {
 		fontSize: 14,
-		fontWeight: "bold",
-	},
-
-	botaoExcluir: {
-		borderWidth: 1,
-		borderRadius: 6,
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-	},
-
-	textoExcluir: {
 		fontWeight: "bold",
 	},
 });

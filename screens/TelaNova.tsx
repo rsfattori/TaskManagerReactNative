@@ -11,27 +11,22 @@ import Cabecalho from "../components/Cabecalho";
 import CampoTexto from "../components/CampoTexto";
 import Botao from "../components/Botao";
 
-// Tela de cadastro de nova tarefa (formulário).
-// Recebe as ações por PROPS: adicionar e voltar.
 type TelaNovaProps = {
-	onAdicionar: (titulo: string, descricao: string) => void;
 	onVoltar: () => void;
 };
 
-export default function TelaNova({ onAdicionar, onVoltar }: TelaNovaProps) {
-	// ESTADO local do formulário (useState).
+export default function TelaNova({ onVoltar }: TelaNovaProps) {
 	const [titulo, setTitulo] = useState("");
 	const [descricao, setDescricao] = useState("");
 	const [erro, setErro] = useState("");
 
 	function salvar() {
-		// Validação simples dos campos obrigatórios.
 		if (titulo.trim() === "" || descricao.trim() === "") {
 			setErro("Título e Descrição são obrigatórios!");
 			return;
 		}
 
-		onAdicionar(titulo, descricao);
+		setErro("Cadastro será integrado à API no Checkpoint 3");
 	}
 
 	return (

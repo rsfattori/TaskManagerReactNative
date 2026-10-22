@@ -1,22 +1,56 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { Tarefa } from "../models/Tarefa";
+import { buscarTarefas } from "../services/tarefaService";
 import Cabecalho from "../components/Cabecalho";
 import Botao from "../components/Botao";
 import Card from "../components/Card";
 
-// Tela principal (Home): mostra a lista de tarefas.
-// Recebe os dados e as ações por PROPS vindas do App.tsx.
 type TelaListaProps = {
-	tarefas: Tarefa[];
-	onExcluir: (id: number) => void;
 	onIrParaNova: () => void;
 };
 
-export default function TelaLista({
-	tarefas,
-	onExcluir,
-	onIrParaNova,
-}: TelaListaProps) {
+export default function TelaLista({ onIrParaNova }: TelaListaProps) {
+	const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+	const [carregando, setCarregando] = useState(true);
+	const [erro, setErro] = useState("");
+
+	async function carregarTarefas() {
+		setCarregando(true);
+		setErro("");
+
+		try {
+			const dados = await buscarTarefas();
+			setTarefas(dados);
+		} catch (e) {
+			setErro(e instanceof Error ? e.message : "Erro desconhecido");
+		} finally {
+			setCarregando(false);
+		}
+	}
+
+	useEffect(() => {
+		carregarTarefas();
+	}, []);
+
+	if (carregando) {
+		return (
+			<View style={styles.centro}>
+				<ActivityIndicator size="large" />
+				<Text style={styles.mensagem}>Carregando tarefas...</Text>
+			</View>
+		);
+	}
+
+	if (erro !== "") {
+		return (
+			<View style={styles.centro}>
+				<Text style={styles.mensagem}>{erro}</Text>
+				<Botao titulo="Tentar novamente" onPress={carregarTarefas} />
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			<FlatList
@@ -44,19 +78,16 @@ export default function TelaLista({
 				}
 				renderItem={({ item }) => (
 					<Card
-						id={item.id}
 						titulo={item.titulo}
 						descricao={item.descricao}
 						status={item.status}
-						onExcluir={onExcluir}
 					/>
 				)}
 				ListEmptyComponent={
 					<View style={styles.listaVazia}>
 						<Text style={styles.textoListaVazia}>
-							Nenhuma tarefa cadastrada
+							Nenhuma tarefa encontrada
 						</Text>
-						<Text>Toque em "Nova Tarefa" para adicionar.</Text>
 					</View>
 				}
 			/>
@@ -73,6 +104,21 @@ const styles = StyleSheet.create({
 	conteudo: {
 		padding: 24,
 		paddingTop: 50,
+	},
+
+	centro: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		padding: 24,
+		backgroundColor: "#fff",
+	},
+
+	mensagem: {
+		fontSize: 16,
+		fontWeight: "bold",
+		marginTop: 10,
+		textAlign: "center",
 	},
 
 	cabecalhoLista: {
@@ -97,6 +143,5 @@ const styles = StyleSheet.create({
 	textoListaVazia: {
 		fontSize: 17,
 		fontWeight: "bold",
-		marginBottom: 5,
 	},
 });
